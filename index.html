@@ -240,7 +240,13 @@ button{cursor:pointer}
 window.__KV={}; window.__KVok=false;
 (function(){
   var KEYS=['mappingHSE_MMU_v1','mappingHSE_MMU_bg_v1','mappingHSE_MMU_hist_v1'];
-  function start(){var src=document.getElementById('mainApp'); var sc=document.createElement('script'); sc.textContent=src.textContent; document.body.appendChild(sc);}
+  var __idbDone=false, __domDone=false, __started=false;
+  function __run(){ if(__started||!__idbDone||!__domDone) return; __started=true;
+    var src=document.getElementById('mainApp'); var sc=document.createElement('script'); sc.textContent=src.textContent; document.body.appendChild(sc); }
+  function start(){ __idbDone=true; __run(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){__domDone=true; __run();}); else __domDone=true;
+  setTimeout(function(){ if(!__idbDone){ __idbDone=true; __run(); } }, 2500);
+  window.addEventListener('error',function(e){ var bs=document.getElementById('bootSplash'); if(bs){ bs.innerHTML='<div style="max-width:320px;text-align:center;line-height:1.5">Terjadi kesalahan saat memuat.<br><small style="opacity:.75">'+String(e.message||'').replace(/</g,'&lt;')+'</small><br><br><button onclick="location.reload()" style="padding:10px 18px;border:0;border-radius:8px;font-weight:700">Muat ulang</button></div>'; } });
   try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(function(){}); }catch(e){}
   var req; try{req=indexedDB.open('mappingHSE_MMU',1);}catch(e){return start();}
   req.onupgradeneeded=function(){req.result.createObjectStore('kv');};
